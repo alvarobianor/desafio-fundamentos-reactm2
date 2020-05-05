@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 import React, { useState, useEffect } from 'react';
 
 import income from '../../assets/income.svg';
@@ -19,9 +20,10 @@ interface Transaction {
   formattedValue: string;
   formattedDate: string;
   type: 'income' | 'outcome';
-  category: { title: string };
+  category_name: string;
   created_at: Date;
 }
+// category: { title: string };
 
 interface Balance {
   income: string;
@@ -30,12 +32,17 @@ interface Balance {
 }
 
 const Dashboard: React.FC = () => {
-  // const [transactions, setTransactions] = useState<Transaction[]>([]);
-  // const [balance, setBalance] = useState<Balance>({} as Balance);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [balance, setBalance] = useState<Balance>({} as Balance);
 
   useEffect(() => {
     async function loadTransactions(): Promise<void> {
-      // TODO
+      const { transactions: transactionsList, balance: balanceValue } = await (
+        await api.get('/transactions')
+      ).data;
+
+      setTransactions(transactionsList);
+      setBalance(balanceValue);
     }
 
     loadTransactions();
@@ -51,21 +58,36 @@ const Dashboard: React.FC = () => {
               <p>Entradas</p>
               <img src={income} alt="Income" />
             </header>
-            <h1 data-testid="balance-income">R$ 5.000,00</h1>
+            <h1 data-testid="balance-income">
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              }).format(parseInt(balance.income))}
+            </h1>
           </Card>
           <Card>
             <header>
               <p>Saídas</p>
               <img src={outcome} alt="Outcome" />
             </header>
-            <h1 data-testid="balance-outcome">R$ 1.000,00</h1>
+            <h1 data-testid="balance-outcome">
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              }).format(parseInt(balance.outcome))}
+            </h1>
           </Card>
           <Card total>
             <header>
               <p>Total</p>
               <img src={total} alt="Total" />
             </header>
-            <h1 data-testid="balance-total">R$ 4000,00</h1>
+            <h1 data-testid="balance-total">
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              }).format(parseInt(balance.total))}
+            </h1>
           </Card>
         </CardContainer>
 
@@ -80,19 +102,52 @@ const Dashboard: React.FC = () => {
               </tr>
             </thead>
 
-            <tbody>
-              <tr>
+            {/* <tr>
                 <td className="title">Computer</td>
                 <td className="income">R$ 5.000,00</td>
                 <td>Sell</td>
                 <td>20/04/2020</td>
-              </tr>
-              <tr>
-                <td className="title">Website Hosting</td>
-                <td className="outcome">- R$ 1.000,00</td>
-                <td>Hosting</td>
-                <td>19/04/2020</td>
-              </tr>
+              </tr> */}
+            <tbody>
+              {/* {transactions.map(value => {
+                return (
+                  <>
+                    <tr key={`${value.id}b`}>
+                      <td className="title">{value.title}</td>
+                      <td className={value.type}>
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(value.value)}
+                      </td>
+                      <td>{value.category}</td>
+                      <td>{value.created_at}</td>
+                    </tr>
+                  </>
+                );
+              })} */}
+
+              {/* <td className={value.type}>
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(value.value)}
+                      </td> */}
+              {transactions.map(value => {
+                // console.log(value);
+                return (
+                  <tr key={`${value.id}`}>
+                    <td className="title">{value.title}</td>
+                    <td className={value.type}>
+                      {value.type === 'outcome'
+                        ? `- ${formatValue(value.value)}`
+                        : formatValue(value.value)}
+                    </td>
+                    <td>{value.category_name}</td>
+                    <td>20/04/2020</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </TableContainer>
