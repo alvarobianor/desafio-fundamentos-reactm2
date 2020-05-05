@@ -1,7 +1,14 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-useless-return */
 import styled from 'styled-components';
 
 interface ContainerProps {
   size?: 'small' | 'large';
+  focus?: 'list' | 'import';
+}
+
+interface Leftt {
+  focus: string;
 }
 
 export const Container = styled.div<ContainerProps>`
@@ -17,6 +24,9 @@ export const Container = styled.div<ContainerProps>`
     justify-content: space-between;
 
     nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       a {
         color: #fff;
         text-decoration: none;
@@ -30,7 +40,29 @@ export const Container = styled.div<ContainerProps>`
         &:hover {
           opacity: 0.6;
         }
+        div {
+          display: flex;
+          align-items: center;
+        }
       }
     }
   }
+`;
+
+export const LinkText = styled.div<Leftt>`
+  position: absolute;
+  width: 73px;
+  height: 2px;
+  top: 69px;
+  left: ${props => {
+    if (props.focus === 'list') return;
+    if (props.focus === 'import') {
+      return '1160px';
+    }
+    return;
+  }};
+
+  /* Orange */
+
+  background: #ff872c;
 `;
